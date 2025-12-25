@@ -1,0 +1,561 @@
+/* 文件名：qiehuanzhuti.css - 双向同步版 */
+/* ===== 主题切换按钮核心样式 ===== */
+
+/* 按钮基础样式 */
+.theme-toggle-button {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  cursor: pointer;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+  outline: none;
+}
+
+/* 按钮状态 */
+.theme-toggle-button.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.5);
+  pointer-events: none;
+}
+
+.theme-toggle-button.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* 入场动画 */
+.theme-toggle-button.float-in {
+  animation: floatIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  70% {
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 出场动画 */
+.theme-toggle-button.float-out {
+  animation: floatOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes floatOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+}
+
+/* 点击动画 */
+.theme-toggle-button.clicked {
+  animation: buttonClick 0.3s ease;
+}
+
+@keyframes buttonClick {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.9); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* 悬停效果 */
+.theme-toggle-button:hover {
+  transform: scale(1.15);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 2px rgba(255, 255, 255, 0.2) inset;
+}
+
+.theme-toggle-button:active {
+  transform: scale(0.95);
+}
+
+/* ===== 图标样式 ===== */
+.theme-toggle-icon {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle-icon span {
+  position: absolute;
+  font-size: 22px;
+  line-height: 1;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.moon-icon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+.sun-icon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+/* 涟漪效果 */
+.theme-toggle-ripple {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    rgba(78, 205, 196, 0.3) 0%, 
+    rgba(255, 107, 107, 0.2) 40%, 
+    transparent 70%);
+  animation: ripplePulse 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes ripplePulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+/* ===== 深色模式适配 ===== */
+[data-theme="dark"] .theme-toggle-button {
+  background: rgba(30, 30, 30, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+[data-theme="dark"] .theme-toggle-button:hover {
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+}
+
+[data-theme="dark"] .theme-toggle-ripple {
+  background: radial-gradient(circle, 
+    rgba(255, 107, 107, 0.3) 0%, 
+    rgba(78, 205, 196, 0.2) 40%, 
+    transparent 70%);
+}
+
+/* 图标切换 */
+[data-theme="dark"] .moon-icon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+[data-theme="dark"] .sun-icon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+/* ===== 主题全局样式 ===== */
+[data-theme="dark"] {
+  /* 基础颜色 */
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2d2d2d;
+  --text-primary: #f0f0f0;
+  --text-secondary: #cccccc;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --accent-color: #4ecdc4;
+}
+
+/* 适配gaichichi.html */
+[data-theme="dark"] body {
+  background-color: var(--bg-primary);
+}
+
+[data-theme="dark"] .menu-panel,
+[data-theme="dark"] .menu-header {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .main-title {
+  filter: brightness(1.1) saturate(1.1);
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+}
+
+/* 文字颜色 */
+[data-theme="dark"] .page-title,
+[data-theme="dark"] .menu-button span,
+[data-theme="dark"] .add-square-button span,
+[data-theme="dark"] .menu-time,
+[data-theme="dark"] .add-option,
+[data-theme="dark"] .empty-text,
+[data-theme="dark"] .empty-subtext {
+  color: var(--text-primary);
+}
+
+/* 胶囊按钮 */
+[data-theme="dark"] .role-capsule,
+[data-theme="dark"] .advanced-capsule {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 107, 107, 0.9),
+    rgba(78, 205, 196, 0.9),
+    rgba(69, 183, 209, 0.9)
+  );
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 分隔线 */
+[data-theme="dark"] .menu-header {
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .divider-line {
+  background-color: var(--border-color);
+}
+
+/* 菜单面板 */
+[data-theme="dark"] .menu-panel {
+  background-color: var(--bg-secondary);
+  box-shadow: -1px 0 15px rgba(0, 0, 0, 0.5);
+}
+
+/* 加号选项框 */
+[data-theme="dark"] .add-options {
+  background-color: var(--bg-tertiary);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .add-option {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .add-option:active {
+  background-color: rgba(78, 205, 196, 0.2);
+}
+
+/* 空状态 */
+[data-theme="dark"] .empty-icon {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* 汉堡菜单线条 */
+[data-theme="dark"] .menu-button span {
+  background-color: var(--text-primary);
+}
+
+/* ===== xiangmu.html 专属深色模式适配 ===== */
+
+/* xiangmu.html 的顶部区域 */
+[data-theme="dark"] .top-section {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .bottom-section {
+  background-color: var(--bg-primary) !important;
+}
+
+/* xiangmu.html 的分隔线 */
+[data-theme="dark"] .divider-line {
+  background-color: var(--border-color) !important;
+}
+
+/* xiangmu.html 的页面标题 */
+[data-theme="dark"] .page-title {
+  color: var(--text-primary) !important;
+}
+
+/* xiangmu.html 的汉堡菜单线条 */
+[data-theme="dark"] .menu-button span {
+  background-color: var(--text-primary) !important;
+}
+
+/* xiangmu.html 的方形加号按钮 */
+[data-theme="dark"] .add-square-button {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .add-square-button span {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .add-square-button:hover {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .add-square-button:active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ===== gaichichi.html 加号按钮深色适配 ===== */
+[data-theme="dark"] .add-button {
+    color: #ffffff !important;
+    background: transparent !important;
+}
+
+[data-theme="dark"] .add-button.active {
+    color: var(--accent-color) !important;
+    background: transparent !important;
+    transform: rotate(45deg) !important;
+}
+
+[data-theme="dark"] .add-button:active {
+    background: transparent !important;
+    transform: scale(0.9) !important;
+}
+
+/* ===== 气泡按钮深色模式适配 ===== */
+[data-theme="dark"] .bubble-button span {
+  background-color: #ffffff !important;
+}
+
+[data-theme="dark"] .bubble-button.active span {
+  background-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .bubble-button:hover span {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ===== 响应式调整 ===== */
+@media (max-width: 768px) {
+  .theme-toggle-button {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .theme-toggle-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .theme-toggle-icon span {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-toggle-button {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .theme-toggle-icon {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .theme-toggle-icon span {
+    font-size: 18px;
+  }
+}
+
+/* ===== 性能优化 ===== */
+.theme-toggle-button,
+.theme-toggle-icon,
+.theme-toggle-ripple {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* ===== 拖动圆环范围 ===== */
+.theme-drag-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px dashed rgba(78, 205, 196, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 9998;
+}
+
+.theme-toggle-button.dragging .theme-drag-ring {
+  opacity: 1;
+  animation: ringPulse 2s infinite;
+}
+
+.theme-toggle-button.drag-max .theme-drag-ring {
+  border: 2px solid rgba(255, 107, 107, 0.8);
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+  animation: ringGlow 1.5s infinite alternate;
+}
+
+@keyframes ringPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    border-color: rgba(78, 205, 196, 0.3);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    border-color: rgba(78, 205, 196, 0.6);
+  }
+}
+
+@keyframes ringGlow {
+  0% {
+    border-color: rgba(255, 107, 107, 0.8);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+  }
+  100% {
+    border-color: rgba(255, 107, 107, 1);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+  }
+}
+
+/* ===== 跳转提示 ===== */
+.theme-jump-hint {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  color: #666;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 10px;
+  border-radius: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 10000;
+  font-weight: 500;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .theme-jump-hint {
+  color: #f0f0f0;
+  background: rgba(30, 30, 30, 0.9);
+}
+
+.theme-toggle-button.drag-max .theme-jump-hint {
+  opacity: 1;
+  visibility: visible;
+  top: -50px;
+}
+
+/* ===== 拖拽范围限制 ===== */
+.drag-range-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9997;
+  display: none;
+}
+
+.theme-toggle-button.dragging ~ .drag-range-overlay {
+  display: block;
+}
+
+/* ===== 拖动时的按钮状态 ===== */
+.theme-toggle-button.dragging {
+  cursor: grabbing !important;
+  z-index: 10000;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle-button.drag-max {
+  animation: buttonPulse 1s infinite alternate;
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+  }
+  100% {
+    transform: scale(1.2);
+    box-shadow: 0 0 40px rgba(255, 107, 107, 0.8);
+  }
+}
+
+/* ===== 跳转动画 ===== */
+.jump-to-bianqian {
+  animation: jumpAway 0.5s ease forwards;
+}
+
+@keyframes jumpAway {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* ===== 响应式调整 ===== */
+@media (max-width: 768px) {
+  .theme-drag-ring {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .theme-jump-hint {
+    font-size: 11px;
+    top: -55px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-drag-ring {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .theme-jump-hint {
+    font-size: 10px;
+    padding: 3px 8px;
+    top: -45px;
+  }
+}

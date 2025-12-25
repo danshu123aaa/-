@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单术</title>
+    <style>
+        /* ===== 全局样式重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #F5F5F5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* ===== 汉堡菜单按钮 ===== */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            outline: none;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .menu-button:active {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .menu-button span {
+            display: block;
+            height: 2px;
+            background-color: #000000;
+            border-radius: 1px;
+            transition: transform 0.05s, opacity 0.05s;
+        }
+        
+        .menu-button span:nth-child(1) {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        
+        .menu-button span:nth-child(2) {
+            width: 70%;
+            margin-bottom: 4px;
+        }
+        
+        .menu-button span:nth-child(3) {
+            width: 100%;
+        }
+        
+        .menu-button.active span:nth-child(1) {
+            transform: rotate(45deg) translate(3px, 4px);
+        }
+        
+        .menu-button.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-button.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(3px, -4px);
+        }
+        
+        /* ===== 气泡按钮 ===== */
+        .bubble-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            outline: none;
+            border-radius: 50%;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        .bubble-button.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .bubble-button:active {
+            transform: scale(0.9);
+        }
+        
+        .bubble-button span {
+            display: block;
+            width: 10px;
+            height: 10px;
+            background-color: #000000;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+        
+        .bubble-button.active span {
+            background-color: #4ecdc4;
+        }
+        
+        /* ===== 中央标题区域 ===== */
+        .title-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .main-title {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            position: relative;
+            display: inline-block;
+            color: transparent;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd, #98d8c8);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: gradientShift 8s ease infinite;
+            padding-bottom: 10px;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* ===== 菜单面板（从右侧滑入） ===== */
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            right: -85%;
+            width: 85%;
+            height: 100%;
+            background-color: #FBFBF8;
+            z-index: 99;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -1px 0 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .menu-panel.active {
+            right: 0;
+        }
+        
+        /* ===== 菜单头部 ===== */
+        .menu-header {
+            height: 80px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* +号按钮在最左侧 */
+        .add-button {
+            background: transparent;
+            border: none;
+            font-size: 1.8rem;
+            color: #000000;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            font-weight: 300;
+            padding: 0;
+            order: 1;
+        }
+        
+        .add-button:active {
+            transform: scale(0.9);
+        }
+        
+        .add-button.active {
+            transform: rotate(45deg);
+            color: #4ecdc4;
+        }
+        
+        /* 角色胶囊按钮在中间 - 流动彩色 */
+        .role-capsule {
+            background: linear-gradient(90deg,#FFE6EE,#FFEEF4,#FFF5F8,#FEF9FF,
+#F8FBFF,#F0F8FF,#E6F2FF,
+#F0F5FF,#F9F0FF,#FFF0F8,#FFEFF7,#F5F8FF,#F2F7FF,#FFF5FB
+);
+            background-size: 400% 100%;
+            border: none;
+            color: Purple;;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+            order: 2;
+            flex-shrink: 0;
+            animation: gradientShift 6s ease infinite;
+        }
+        
+        .role-capsule:active {
+            transform: scale(0.90);
+        }
+        
+        /* 高级胶囊 */
+        
+        .advanced-capsule {
+            background: linear-gradient(90deg,#FFE6EE,#FFEEF4,#FFF5F8,#FEF9FF,
+#F8FBFF,#F0F8FF,#E6F2FF,
+#F0F5FF,#F9F0FF,#FFF0F8,#FFEFF7,#F5F8FF,#F2F7FF,#FFF5FB
+);
+                background-size: 400% 100%;
+            border: none;
+            color: Purple;;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+            order: 2;
+            flex-shrink: 0;
+            animation: gradientShift 6s ease infinite;
+        }
+        
+        .role-capsule:active {
+            transform: scale(0.90);
+        }
+        
+        /* 时间在最右侧 */
+.menu-title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    order: 3;
+    margin-left: auto;
+}
+
+.menu-time {
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1;
+}
+        
+        /* ===== 加号选项框 ===== */
+        .add-options {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            width: 160px;
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            padding: 8px 0;
+            z-index: 101;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+        }
+        
+        .add-options.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .add-option {
+            padding: 12px 20px;
+            color: #333;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .add-option:active {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: scale(0.98);
+        }
+        
+        
+        /* ===== 菜单内容区域 ===== */
+        .menu-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        /* ===== 空状态样式 ===== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            padding: 40px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .empty-subtext {
+            font-size: 0.9rem;
+            color: #bbb;
+            text-align: center;
+        }
+        
+        /* ===== 遮罩层 ===== */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+            z-index: 98;
+            display: none;
+        }
+        
+        .menu-overlay.active {
+            display: block;
+        }
+        
+        /* ===== 响应式调整 ===== */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.2rem;
+                letter-spacing: 3px;
+            }
+            
+            .menu-button, .bubble-button {
+                width: 22px;
+                height: 22px;
+                top: 18px;
+            }
+            
+            .menu-button {
+                left: 16px;
+            }
+            
+            .bubble-button {
+                right: 16px;
+            }
+            
+            .bubble-button span {
+                width: 9px;
+                height: 9px;
+            }
+            
+            .menu-header {
+                height: 70px;
+                padding: 16px;
+            }
+            
+            .add-button {
+                width: 36px;
+                height: 36px;
+                font-size: 1.6rem;
+            }
+            
+            .role-capsule {
+                padding: 6px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .menu-time {
+                font-size: 0.8rem;
+            }
+            
+            .add-options {
+                width: 140px;
+                left: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+            }
+            
+            .menu-button, .bubble-button {
+                width: 20px;
+                height: 20px;
+                top: 16px;
+            }
+            
+            .menu-button span {
+                height: 1.5px;
+            }
+            
+            .menu-button.active span:nth-child(1) {
+                transform: rotate(45deg) translate(2px, 3px);
+            }
+            
+            .menu-button.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(2px, -3px);
+            }
+            
+            .bubble-button span {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .menu-header {
+                height: 65px;
+                padding: 14px;
+            }
+            
+            .add-button {
+                width: 32px;
+                height: 32px;
+                font-size: 1.4rem;
+            }
+            
+            .role-capsule {
+                padding: 5px 14px;
+                font-size: 0.85rem;
+            }
+            
+            .menu-time {
+                font-size: 0.75rem;
+            }
+            
+            .add-options {
+                width: 130px;
+                padding: 6px 0;
+                left: 14px;
+            }
+            
+            .add-option {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 主题切换浮动按钮 -->
+<button id="themeToggleButton" class="theme-toggle-button hidden" aria-label="切换主题模式">
+  <div class="theme-toggle-icon">
+    <span class="moon-icon">🌙</span>
+    <span class="sun-icon">☀️</span>
+  </div>
+  <div class="theme-toggle-pulse"></div>
+</button>
+
+    <!-- 汉堡菜单按钮 -->
+    <button class="menu-button" id="menuButton" aria-label="菜单按钮">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <!-- 气泡按钮 -->
+    <button class="bubble-button" id="bubbleButton" aria-label="气泡按钮">
+        <span></span>
+    </button>
+    
+    <!-- 中央标题区域 -->
+    <div class="title-container">
+        <h1 class="main-title">单术</h1>
+    </div>
+    
+    <!-- 菜单面板 -->
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-header">
+            <button class="add-button" id="addButton">+</button>
+            
+            <button class="role-capsule" id="roleCapsule">角色</button>
+<button class="role-capsule" id="advancedCapsule">高级</button>
+            <div class="menu-title-container">
+                <!-- 时间显示 -->
+<div class="menu-time" id="timeButton">
+    <span class="weather-icon" id="weatherIcon">☀️</span>
+    <span id="timeStamp">--:--</span>
+</div>
+            </div>
+            
+            <div class="add-options" id="addOptions">
+                <div class="add-option" id="createChat">创建聊天</div>
+                <div class="add-option" id="createGroup">发起群聊</div>
+                <div class="add-option" id="importChat">导入聊天</div>
+                <div class="add-option" id="settingsOption">设置</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 遮罩层 -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <script>
+        // ===== DOM元素获取 =====
+        const menuButton = document.getElementById('menuButton');
+        const bubbleButton = document.getElementById('bubbleButton');
+        const menuPanel = document.getElementById('menuPanel');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const addButton = document.getElementById('addButton');
+        const addOptions = document.getElementById('addOptions');
+        const menuTimeBtn = document.getElementById('menuTimeBtn');
+        const timeStamp = document.getElementById('timeStamp');
+        const weatherIcon = document.getElementById('weatherIcon');
+        
+        // ===== 状态变量 =====
+        let isMenuOpen = false;
+        let isAddOptionsOpen = false;
+        
+        
+        // 天气图标序列
+        const weatherIcons = ['☀️', '🌤', '⛅', '🌥', '☁️', '🌕', '🌖', '🌗', '🌘', '🌑'];
+        
+        // ===== 时间更新函数 =====
+        function updateTime() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            
+            timeStamp.textContent = `${year}/${month}/${day}/${hours}:${minutes}`;
+            
+            // 根据时间段判断天气图标
+            const hour = date.getHours();
+            let weatherIndex;
+            
+            if (hour >= 6 && hour < 18) {
+                weatherIndex = Math.floor((hour - 6) / 1.2);
+                weatherIndex = Math.min(weatherIndex, 4);
+            } else {
+                weatherIndex = Math.floor(((hour + 6) % 24) / 2.4);
+                weatherIndex = Math.min(weatherIndex + 5, 9);
+            }
+            
+            weatherIcon.textContent = weatherIcons[weatherIndex];
+        }
+
+        // ===== 菜单控制函数 =====
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            
+            if (isMenuOpen) {
+                menuPanel.classList.add('active');
+                menuOverlay.classList.add('active');
+                bubbleButton.classList.add('hidden');
+                updateTime();
+                closeAddOptions();
+            } else {
+                menuPanel.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                bubbleButton.classList.remove('hidden');
+                addButton.classList.remove('active');
+            }
+        }
+        
+        function toggleAddOptions(event) {
+            if (event) event.stopPropagation();
+            isAddOptionsOpen = !isAddOptionsOpen;
+            
+            if (isAddOptionsOpen) {
+                addOptions.classList.add('active');
+                addButton.classList.add('active');
+            } else {
+                addOptions.classList.remove('active');
+                addButton.classList.remove('active');
+            }
+        }
+        
+        function closeAddOptions() {
+            isAddOptionsOpen = false;
+            addOptions.classList.remove('active');
+            addButton.classList.remove('active');
+        }
+        
+        // ===== 事件监听器 =====
+        function setupEventListeners() {
+// 汉堡按钮点击 - 跳转到xiangmu.html
+menuButton.addEventListener('click', function() {
+    // 跳转到xiangmu.html
+    window.location.href = 'xiangmu.html';
+});
+            
+// 气泡按钮点击 - 打开菜单
+bubbleButton.addEventListener('click', function() {
+    this.classList.toggle('active');  // 只改了这里！
+    toggleMenu();
+});
+            
+            // 遮罩层点击 - 关闭菜单
+            menuOverlay.addEventListener('click', toggleMenu);
+            
+            // 加号按钮点击
+            addButton.addEventListener('click', toggleAddOptions);
+            
+            // 按钮点击 - 交互效果（无弹窗）
+document.getElementById('roleCapsule').addEventListener('click', function(e) {
+    createRipple(e, this);
+    this.style.transform = 'scale(0.80)';
+    setTimeout(() => {
+        this.style.transform = '';
+    }, 200);
+});
+
+// 高级按钮的监听
+document.getElementById('advancedCapsule').addEventListener('click', function(e) {
+    createRipple(e, this);
+    this.style.transform = 'scale(0.80)';
+    setTimeout(() => {
+        this.style.transform = '';
+    }, 200);
+});
+            
+            // 加号选项点击 - 交互效果（无弹窗）
+            document.querySelectorAll('.add-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 添加点击反馈
+                    this.style.backgroundColor = 'rgba(78, 205, 196, 0.1)';
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                    }, 200);
+                    
+                    // 关闭选项框
+                    closeAddOptions();
+                });
+            });
+            
+            // 点击其他地方关闭加号选项
+            document.addEventListener('click', function(event) {
+                if (isAddOptionsOpen && 
+                    !addButton.contains(event.target) && 
+                    !addOptions.contains(event.target)) {
+                    closeAddOptions();
+                }
+            });
+            
+            // 防止菜单面板点击事件冒泡
+            menuPanel.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+            
+            addOptions.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
+        
+        // ===== 初始化 =====
+        function init() {
+            setupEventListeners();
+            updateTime(); // 初始更新时间
+            
+            // 设置定时更新时间
+            setInterval(updateTime, 60000);
+        }
+        
+        // ===== 给按钮加Q弹效果 =====
+function createRipple(e, button) {
+    // 创建涟漪
+    let ripple = document.createElement('span');
+    ripple.style.cssText = `
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: rgba(78, 205, 196, 0.5);
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        top: ${e.offsetY - 50}px;
+        left: ${e.offsetX - 50}px;
+        pointer-events: none;
+    `;
+    
+    button.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+}
+
+// 添加涟漪动画
+let style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to { transform: scale(4); opacity: 0; }
+    }
+    .role-capsule, .advanced-capsule {
+        position: relative;
+        overflow: hidden;
+    }
+`;
+document.head.appendChild(style);
+        
+        // 页面加载完成时初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+    
+</body>
+
+<link rel="stylesheet" href="shijianyanhua.css">
+<link rel="stylesheet" href="qiehuanzhuti.css">
+
+<script src="shijianyanhua.js"></script>
+<script src="qiehuanzhuti.js"></script>
+
+</html>

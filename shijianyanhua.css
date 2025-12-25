@@ -1,0 +1,322 @@
+/* 文件名：shijianyanhua.css - 增强版 */
+/* ===== 时间烟花交互增强版 ===== */
+:root {
+    --time-primary: #4ecdc4;
+    --time-secondary: #45b7d1;
+    --time-accent: #ff6b6b;
+    --time-gold: #ffd166;
+    --time-purple: #9d4edd;
+    --time-text: #333333;
+    --time-light: rgba(78, 205, 196, 0.1);
+    --time-shadow: rgba(0, 0, 0, 0.08);
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== 烟花粒子效果 ===== */
+.firework-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.firework-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: firework-explode 1s ease-out forwards;
+}
+
+@keyframes firework-explode {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ===== 时间按钮烟花版样式 ===== */
+.menu-time {
+    cursor: pointer;
+    transition: all var(--transition-smooth);
+    user-select: none;
+    position: relative;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* 背景流光效果 */
+.menu-time::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent);
+    z-index: -1;
+}
+
+.menu-time:hover::before {
+    animation: background-shimmer 2s linear infinite;
+}
+
+@keyframes background-shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* 霓虹边框效果 */
+.menu-time:hover {
+    border: 1px solid transparent;
+    background: linear-gradient(90deg, 
+        var(--time-primary), 
+        var(--time-secondary), 
+        var(--time-accent), 
+        var(--time-purple)) border-box;
+    animation: border-glow 2s linear infinite;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+@keyframes border-glow {
+    0%, 100% {
+        box-shadow: 
+            0 0 5px var(--time-primary),
+            0 0 10px var(--time-secondary),
+            0 0 15px var(--time-accent);
+    }
+    50% {
+        box-shadow: 
+            0 0 10px var(--time-primary),
+            0 0 20px var(--time-secondary),
+            0 0 30px var(--time-accent);
+    }
+}
+
+/* ===== 时间数字动画 - 暗色渐变版本 ===== */
+#timeStamp {
+    display: inline-block;
+    transition: all var(--transition-fast);
+    position: relative;
+    font-weight: 500;
+    /* 暗色渐变：深蓝到深紫再到深红 */
+    background: linear-gradient(90deg, 
+        #2c3e50,     /* 深蓝灰 */
+        #34495e,     /* 深蓝灰 */
+        #5d2e8a,     /* 深紫 */
+        #7b2cbf,     /* 深紫 */
+        #9d174d,     /* 深红紫 */
+        #ad1457);    /* 深红紫 */
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% 100%;
+    animation: text-gradient 3s ease infinite;
+}
+
+@keyframes text-gradient {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* 点击时的数字跳动 */
+.menu-time:active #timeStamp {
+    animation: 
+        number-bounce 0.6s ease,
+        text-gradient 3s ease infinite;
+}
+
+@keyframes number-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-8px);
+    }
+    50% {
+        transform: translateY(0);
+    }
+    75% {
+        transform: translateY(-4px);
+    }
+}
+
+/* ===== 天气图标动画增强 ===== */
+#weatherIcon {
+    display: inline-block;
+    transition: all var(--transition-smooth);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
+    animation: weather-orbit 20s linear infinite;
+}
+
+@keyframes weather-orbit {
+    0% {
+        transform: rotate(0deg) translateY(0);
+    }
+    25% {
+        transform: rotate(90deg) translateY(-3px);
+    }
+    50% {
+        transform: rotate(180deg) translateY(0);
+    }
+    75% {
+        transform: rotate(270deg) translateY(3px);
+    }
+    100% {
+        transform: rotate(360deg) translateY(0);
+    }
+}
+
+/* 悬停时加速 */
+.menu-time:hover #weatherIcon {
+    animation-duration: 10s;
+    filter: drop-shadow(0 2px 5px rgba(255,107,107,0.3));
+}
+
+/* ===== 时间刷新烟花特效 ===== */
+.menu-time.active {
+    animation: time-sparkle 1s ease-out;
+}
+
+@keyframes time-sparkle {
+    0% {
+        transform: scale(1);
+    }
+    30% {
+        transform: scale(0.95);
+    }
+    60% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 刷新时的粒子光环 */
+.menu-time.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: radial-gradient(circle, 
+        var(--time-primary) 0%, 
+        transparent 70%);
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    animation: time-halo 1s ease-out;
+    z-index: -1;
+}
+
+@keyframes time-halo {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* ===== 双击显示完整时间的特效 ===== */
+.menu-time.double-click {
+    animation: fulltime-reveal 0.5s ease-out;
+}
+
+@keyframes fulltime-reveal {
+    0% {
+        background-color: rgba(78, 205, 196, 0);
+        transform: scale(1);
+    }
+    50% {
+        background-color: rgba(78, 205, 196, 0.2);
+        transform: scale(1.1);
+    }
+    100% {
+        background-color: rgba(78, 205, 196, 0);
+        transform: scale(1);
+    }
+}
+
+/* ===== 键盘快捷键提示 ===== */
+.keyboard-hint {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--time-text);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+}
+
+.menu-time:hover .keyboard-hint {
+    opacity: 1;
+}
+
+/* ===== 响应式调整 ===== */
+@media (max-width: 768px) {
+    .menu-time {
+        padding: 5px 10px;
+    }
+    
+    .keyboard-hint {
+        display: none; /* 移动端隐藏键盘提示 */
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-time {
+        padding: 4px 8px;
+    }
+    
+    #weatherIcon {
+        font-size: 0.9em;
+    }
+}
+
+/* ===== 性能优化 ===== */
+.menu-time,
+#timeStamp,
+#weatherIcon,
+.firework-particle {
+    will-change: transform, opacity, filter;
+    backface-visibility: hidden;
+}

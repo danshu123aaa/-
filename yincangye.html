@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单术</title>
+    <style>
+        /* ===== 全局样式重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #F5F5F5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* ===== 汉堡菜单按钮 ===== */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            outline: none;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .menu-button:active {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .menu-button span {
+            display: block;
+            height: 2px;
+            background-color: #000000;
+            border-radius: 1px;
+            transition: transform 0.05s, opacity 0.05s;
+        }
+        
+        .menu-button span:nth-child(1) {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        
+        .menu-button span:nth-child(2) {
+            width: 70%;
+            margin-bottom: 4px;
+        }
+        
+        .menu-button span:nth-child(3) {
+            width: 100%;
+        }
+        
+        .menu-button.active span:nth-child(1) {
+            transform: rotate(45deg) translate(3px, 4px);
+        }
+        
+        .menu-button.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-button.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(3px, -4px);
+        }
+        
+        /* ===== 页面标题（中间） ===== */
+        .page-title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #000000;
+            z-index: 100;
+        }
+        
+        /* ===== 右侧+号按钮 ===== */
+        .add-square-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: 1.5px solid #000000;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            outline: none;
+            transition: all 0.2s;
+        }
+        
+        .add-square-button:active {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: scale(0.9);
+        }
+        
+        .add-square-button span {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: #000000;
+            line-height: 1;
+        }
+        
+        /* ===== 分隔线 ===== */
+        .divider-line {
+            position: fixed;
+            top: 8.5vh;
+            left: 10%;
+            right: 10%;
+            height: 0.5px;
+            background-color: rgba(0, 0, 0, 0.26);
+            z-index: 90;
+        }
+        
+        /* ===== 顶部固定区域 ===== */
+        .top-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8.5vh;
+            background-color: #F5F5F5;
+            z-index: 80;
+        }
+        
+        /* ===== 底部滑动区域 ===== */
+        .bottom-section {
+            position: fixed;
+            top: 8.5vh;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background-color: #F5F5F5;
+            z-index: 70;
+        }
+        
+        
+        /* ===== 响应式调整 ===== */
+        @media (max-width: 768px) {
+            .menu-button, .add-square-button {
+                width: 22px;
+                height: 22px;
+                top: 18px;
+            }
+            
+            .menu-button {
+                left: 16px;
+            }
+            
+            .add-square-button {
+                right: 16px;
+            }
+            
+            .add-square-button span {
+                font-size: 1.1rem;
+            }
+            
+            .page-title {
+                top: 18px;
+                font-size: 1.1rem;
+            }
+            
+            .divider-line {
+                left: 8%;
+                right: 8%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .menu-button, .add-square-button {
+                width: 20px;
+                height: 20px;
+                top: 16px;
+            }
+            
+            .menu-button span {
+                height: 1.5px;
+            }
+            
+            .menu-button.active span:nth-child(1) {
+                transform: rotate(45deg) translate(2px, 3px);
+            }
+            
+            .menu-button.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(2px, -3px);
+            }
+            
+            .add-square-button span {
+                font-size: 1rem;
+            }
+            
+            .page-title {
+                top: 16px;
+                font-size: 1rem;
+            }
+            
+            .divider-line {
+                left: 6%;
+                right: 6%;
+            }
+        }
+    </style>
+    
+    <!-- 引入主题切换CSS -->
+    <link rel="stylesheet" href="qiehuanzhuti.css">
+</head>
+<body>
+
+    <!-- 汉堡菜单按钮 -->
+<button class="menu-button" id="backButton" aria-label="返回按钮">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+    
+    <!-- 页面标题（中间） -->
+    <div class="page-title">隐藏页</div>
+    
+    <!-- 右侧+号按钮 -->
+    <button class="add-square-button" aria-label="添加按钮">
+        <span>+</span>
+    </button>
+    
+    <!-- 分隔线 -->
+    <div class="divider-line"></div>
+    
+    <!-- 顶部固定区域 -->
+    <div class="top-section"></div>
+    
+    <!-- 底部滑动区域 -->
+    <div class="bottom-section">
+    </div>
+
+    <script>
+        // 页面加载时设置汉堡按钮为X状态
+window.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.querySelector('.menu-button');
+    menuButton.classList.add('active');
+    
+    // 添加返回点击事件
+    menuButton.addEventListener('click', function() {
+        // 先变回汉堡形状
+        this.classList.remove('active');
+        
+        // 延迟150毫秒后返回，让动画完成
+        setTimeout(() => {
+            window.history.back();
+        }, 150);
+    });
+});
+    </script>
+    
+    <!-- 引入主题切换JS -->
+    <script src="qiehuanzhuti.js"></script>
+<!-- 引入主题切换CSS -->
+<link rel="stylesheet" href="qiehuanzhuti.css">
+</body>
+</html>
